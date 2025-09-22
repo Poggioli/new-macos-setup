@@ -279,7 +279,7 @@ append_ssh_switcher() {
   '    # Call the original cd' \
   '    builtin cd "$@" || return' \
   '    # Work directory' \
-  '    local WORK_DIR="~/Documents/Projects/Professional"' \
+  '    local WORK_DIR="$HOME/Documents/Projects/Professional"' \
   '    # Clear current keys from ssh-agent' \
   '    ssh-add -D &>/dev/null' \
   '    if [[ "$PWD" == "$WORK_DIR"* ]]; then' \
@@ -298,7 +298,7 @@ append_ssh_switcher() {
 main() {
   backup_zshrc
   install_homebrew
-  install_auto_env
+  # install_auto_env
   install_podman
   install_apps
   install_nvm_node
