@@ -80,6 +80,11 @@ install_apps() {
   echo "✅ Google Chrome installed successfully!"
 
   echo ""
+  echo "⬇️ Installing Slack..."
+  brew install --cask slack
+  echo "✅ Slack installed successfully!"
+
+  echo ""
   echo "⬇️ Installing VS Code..."
   brew install --cask visual-studio-code
   echo "✅ VS Code installed successfully!"
@@ -224,7 +229,7 @@ install_ohmyzsh() {
     'CASE_SENSITIVE="true"' \
     'zstyle ":omz:update" mode reminder' \
     'export ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"' \
-    'plugins=(git extract docker docker-compose zsh-autosuggestions zsh-syntax-highlighting sudo dirhistory history)' \
+    'plugins=(git extract docker docker-compose zsh-autosuggestions zsh-syntax-highlighting sudo)' \
     'source $ZSH/oh-my-zsh.sh'
 }
 
@@ -265,6 +270,30 @@ customize_theme() {
     "PROMPT='%{\$fg[cyan]%}%~%{\$reset_color%} \$(git_prompt_info)'"
 }
 
+# --- Switch between ssh keys ---
+
+append_ssh_switcher() {
+  echo "🔧 Configuring SSH Switcher..."
+  append_block_if_not_exists "#### BEGIN SSH-SWITCHER ####" "#### END SSH-SWITCHER ####" ~/.zshrc \
+  'function cd() {' \
+  '    # Call the original cd' \
+  '    builtin cd "$@" || return' \
+  '    # Work directory' \
+  '    local WORK_DIR="~/Documents/Projects/Professional"' \
+  '    # Clear current keys from ssh-agent' \
+  '    ssh-add -D &>/dev/null' \
+  '    if [[ "$PWD" == "$WORK_DIR"* ]]; then' \
+  '        # Inside work directory → use work key' \
+  '        ssh-add --apple-use-keychain ~/.ssh/id_ed25519_work &>/dev/null' \
+  '        echo "🔑 Using WORK SSH key"' \
+  '    else' \
+  '        # Otherwise → use personal key' \
+  '        ssh-add --apple-use-keychain ~/.ssh/id_ed25519_personal &>/dev/null' \
+  '        echo "🔑 Using PERSONAL SSH key"' \
+  '    fi' \
+  '}'
+}
+
 # --- Main Execution ---
 main() {
   backup_zshrc
@@ -276,6 +305,7 @@ main() {
   install_ohmyzsh
   install_ohmyzsh_plugins
   customize_theme
+  append_ssh_switcher
 
   echo ""
 
